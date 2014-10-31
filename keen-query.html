@@ -19,7 +19,7 @@ wrapper to make it go down smooth.
 @blurb RUn and visualize queries stored on Keen.io
 @status alpha
 -->
-<polymer-element name="keen-query" attributes="project type key collection property interval timeframe group filters auto">
+<polymer-element name="keen-query" attributes="project type key collection property interval timeframe group filters auto config">
 
   <template>
     <link rel="stylesheet" href="keen-query.css">
@@ -84,6 +84,11 @@ wrapper to make it go down smooth.
        * @type Boolean
        * @default false
        */
+      /**
+       * The chart configuration ([see docs](https://github.com/keenlabs/keen-js/blob/master/docs/visualization.md#configuration))
+       * @attribute config
+       * @type Object
+       */
       auto: false,
       ready: function() {
         Keen.ready(function() {
@@ -120,7 +125,7 @@ wrapper to make it go down smooth.
        * @method draw
        */
       draw: function() {
-        this.client.draw(this.query, this.$.viz, {});
+        this.client.draw(this.query, this.$.viz, this.config || {});
       }
     });
 
