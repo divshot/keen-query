@@ -79,15 +79,35 @@ wrapper to make it go down smooth.
        * @type Array
        */
       /**
+       * The chart configuration ([see docs](https://github.com/keenlabs/keen-js/blob/master/docs/visualization.md#configuration))
+       * @attribute config
+       * @type Object
+       */
+      /**
+       * The title of the chart.
+       * @attribute title
+       * @type String
+       */
+      /**
+       * The label mappings for the chart.
+       * @attribute labelMappings
+       * @type Object or Array
+       */
+      /**
+       * The color mappings for the chart.
+       * @attribute colorMappings
+       * @type Object
+       */
+      /**
+       * The type of chart.
+       * @attribute chartType
+       * @type String
+       */
+      /**
        * Whether to automatically redraw the chart as parameters change.
        * @attribute auto
        * @type Boolean
        * @default false
-       */
-      /**
-       * The chart configuration ([see docs](https://github.com/keenlabs/keen-js/blob/master/docs/visualization.md#configuration))
-       * @attribute config
-       * @type Object
        */
       auto: false,
       created: function() {
@@ -130,15 +150,16 @@ wrapper to make it go down smooth.
       draw: function() {
         var box = this.getBoundingClientRect();
         var h = (box.height === 0) ? 400 : h;
-        this.client.draw(this.query, this.$.viz, {
-          title: this.title,
+        var config = {
           width: 'auto',
-          height: h,
-          labelMapping: this.labelMapping,
-          colorMapping: this.colorMapping,
-          chartOptions: this.chartOptions,
-          chartType: this.chartType
-        });
+          height: h
+        }
+        if (this.title) config.title = this.title;
+        if (this.labelMapping) config.labelMapping = this.labelMapping;
+        if (this.colorMapping) config.colorMapping = this.colorMapping;
+        if (this.chartOptions) config.chartOptions = this.chartOptions;
+        if (this.chartType) config.chartType = this.chartType;
+        this.client.draw(this.query, this.$.viz, config);
       }
     });
 
