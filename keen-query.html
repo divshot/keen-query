@@ -1,0 +1,129 @@
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="keen-js.html">
+
+<!--
+Query and visualize data from Keen.io quickly and easily. Uses Keen's built-in
+visualization library from the JavaScript SDK, but with a nice Web Components
+wrapper to make it go down smooth.
+
+##### Example
+
+    <keen-query project="yourprojectid" key="yourkey" 
+      type="sum" 
+      collection="purchases"
+      property="total" 
+      timeframe="last_30_days">
+    </keen-query>
+
+@element keen-query
+@blurb RUn and visualize queries stored on Keen.io
+@status alpha
+-->
+<polymer-element name="keen-query" attributes="project type key collection property interval timeframe group filters auto">
+
+  <template>
+    <link rel="stylesheet" href="keen-query.css">
+    <div id="viz"></div>
+  </template>
+
+  <script>
+
+    Polymer({
+      /**
+       * The ID of the Keen project you wish to query.
+       * @attribute project
+       * @type String
+       */
+      /**
+       * The read key you wish to use to authorize the query.
+       * @attribute key
+       * @type String
+       */
+      /**
+       * The analysis type you want to perform. For example `sum` or `count`.
+       * See [Keen Docs](https://keen.io/docs/data-analysis/metrics/) for more
+       * info.
+       * @attribute type
+       * @type String
+       */
+      /**
+       * The event collection on which you wish to run analysis.
+       * @attribute collection
+       * @type String
+       */
+      /**
+       * The target property for analysis (if required by `type`).
+       * @attribute property
+       * @type String
+       */
+      /**
+       * The [timeframe](https://keen.io/docs/data-analysis/timeframe/) over
+       * which to query. For example, `last_30_days`.
+       * @attribute timeframe
+       * @type string
+       */
+      /**
+       * The interval into which to segment results, such as `daily` or `hourly`.
+       * @attribute interval
+       * @type string
+       */
+      /**
+       * The property by which to group results.
+       * @attribute group
+       * @type string
+       */
+      /**
+       * Any filters you wish to apply. Must be specified [according to the JS
+       * SDK](https://keen.io/docs/data-analysis/filters/).
+       * @attribute filters
+       * @type Array
+       */
+      /**
+       * Whether to automatically redraw the chart as parameters change.
+       * @attribute auto
+       * @type Boolean
+       * @default false
+       */
+      auto: false,
+      ready: function() {
+        Keen.ready(function() {
+          console.log(document.getElementById("keen-widgets"));
+        });
+      },
+      observe: {
+        'project key': 'initClient',
+        'collection property interval timeframe group filters': 'updateQuery'
+      },
+      initClient: function() {
+        console.log('initClient');
+        this.client = new Keen({
+          projectId: this.project,
+          readKey: this.key
+        });
+      },
+      updateQuery: function() {
+        this.query = new Keen.Query(this.type, {
+          eventCollection: this.collection,
+          timeframe: this.timeframe,
+          targetProperty: this.property,
+          interval: this.interval,
+          groupBy: this.group,
+          filters: this.filters
+        });
+        if (this.auto) {
+          this.draw();
+        }
+      },
+      /**
+       * Draw the query with current parameters. Must be invoked manually if
+       * `auto` is not specified.
+       * @method draw
+       */
+      draw: function() {
+        this.client.draw(this.query, this.$.viz, {});
+      }
+    });
+
+  </script>
+
+</polymer-element>
