@@ -19,7 +19,7 @@ wrapper to make it go down smooth.
 @blurb RUn and visualize queries stored on Keen.io
 @status alpha
 -->
-<polymer-element name="keen-query" attributes="project type key collection property interval timeframe group filters auto config">
+<polymer-element name="keen-query" attributes="project type key collection property interval timeframe group filters auto config title labelMapping colorMapping chartOptions chartType">
 
   <template>
     <link rel="stylesheet" href="keen-query.css">
@@ -90,6 +90,9 @@ wrapper to make it go down smooth.
        * @type Object
        */
       auto: false,
+      created: function() {
+        this.config = {};
+      },
       ready: function() {
         Keen.ready(function() {
           console.log(document.getElementById("keen-widgets"));
@@ -125,7 +128,17 @@ wrapper to make it go down smooth.
        * @method draw
        */
       draw: function() {
-        this.client.draw(this.query, this.$.viz, this.config || {});
+        var box = this.getBoundingClientRect();
+        var h = (box.height === 0) ? 400 : h;
+        this.client.draw(this.query, this.$.viz, {
+          title: this.title,
+          width: 'auto',
+          height: h,
+          labelMapping: this.labelMapping,
+          colorMapping: this.colorMapping,
+          chartOptions: this.chartOptions,
+          chartType: this.chartType
+        });
       }
     });
 
